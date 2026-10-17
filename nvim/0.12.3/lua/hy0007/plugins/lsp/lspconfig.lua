@@ -137,6 +137,8 @@ return {
       "prismals",
       "pyright",
       "eslint",
+      "jdtls",
+      "kotlin_language_server",
     }
     vim.lsp.enable(servers)
   end,

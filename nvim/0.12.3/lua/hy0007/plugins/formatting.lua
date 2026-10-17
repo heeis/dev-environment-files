@@ -20,6 +20,8 @@ return {
         liquid = { "prettier" },
         lua = { "stylua" },
         python = { "isort", "black" },
+        java = { "google-java-format" },
+        kotlin = { "ktlint" },
       },
       format_on_save = {
         lsp_fallback = true,

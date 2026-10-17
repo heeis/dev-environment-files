@@ -38,6 +38,8 @@ return {
         "prismals",
         "pyright",
         "eslint",
+        "jdtls",
+        "kotlin_language_server",
       },
     })
 
@@ -49,6 +51,8 @@ return {
         "black", -- python formatter
         "pylint", -- pyhton linter
         "eslint_d", -- js linter
+        "google-java-format", -- java formatter
+        "ktlint", -- kotlin linter/formatter
       },
     })
   end,

@@ -146,10 +146,16 @@ IntelliJ IDEA에서 Neovim으로 전환하시는 분들을 위해, 현재 설정
 
 ---
 
-## 📦 새로운 언어 도구 추가하기 (Mason)
+## 📦 기본 지원 언어 및 새로운 언어 도구 추가 (Mason)
 
-Python, TypeScript, HTML, CSS, Tailwind, Svelte, GraphQL, Prisma, ESLint 등이 기본 구성되어 있습니다.  
-추가로 Go, Rust, Java, C++ 등의 언어 서버나 포맷터가 필요한 경우:
+### 기본 구성된 언어 환경
+- **Java**: `jdtls` (LSP), `google-java-format` (Formatter), `java` (Treesitter)
+- **Kotlin**: `kotlin_language_server` (LSP), `ktlint` (Formatter/Linter), `kotlin` (Treesitter)
+- **TypeScript / JavaScript**: `ts_ls`, `eslint_d`, `prettier`
+- **Python**: `pyright`, `black`, `isort`, `pylint`
+- **Web / 기타**: `html`, `cssls`, `tailwindcss`, `svelte`, `graphql`, `prismals`, `lua_ls`
+
+추가로 Go, Rust, C++ 등의 언어 서버나 포맷터가 필요한 경우:
 
 1. Neovim 실행 후 `:Mason` 입력
 2. 인터랙티브 창에서:
