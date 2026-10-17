@@ -29,10 +29,11 @@ brew install starship
 
 ---
 
-## 심볼릭 링크 설정
+## 설정 파일 복사
 
 ```bash
-ln -sfn /Users/heeyong/Workspaces/dev-environment-files/starship/starship.toml ~/.config/starship.toml
+mkdir -p ~/.config
+cp /Users/heeyong/Workspaces/dev-environment-files/starship/starship.toml ~/.config/starship.toml
 ```
 
 ---

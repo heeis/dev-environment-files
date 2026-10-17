@@ -21,12 +21,12 @@ brew install eza
 
 ---
 
-## 심볼릭 링크 설정
+## 설정 파일 복사
 
 ```bash
-# Eza 설정 디렉토리 생성 및 심볼릭 링크 연결
+# Eza 설정 디렉토리 생성 및 테마 파일 복사
 mkdir -p ~/.config/eza
-ln -sfn /Users/heeyong/Workspaces/dev-environment-files/eza/theme.yml ~/.config/eza/theme.yml
+cp /Users/heeyong/Workspaces/dev-environment-files/eza/theme.yml ~/.config/eza/theme.yml
 ```
 
 ---

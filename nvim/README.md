@@ -41,17 +41,19 @@ nvim/
 
 ---
 
-## 심볼릭 링크 설정 방법
+## 설정 파일 복사 방법
 
 ### Neovim 0.12.3 설정 사용 시 (현재 추천)
 
 ```bash
-# 기존 심볼릭 링크 또는 디렉토리 백업/제거 후
-ln -sfn /Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3 ~/.config/nvim
+# 기존 디렉토리 정리 후 0.12.3 최적화 설정 복사
+mkdir -p ~/.config
+rm -rf ~/.config/nvim && cp -R /Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3 ~/.config/nvim
 ```
 
 ### Neovim 0.11.3 설정으로 복구/전환 시
 
 ```bash
-ln -sfn /Users/heeyong/Workspaces/dev-environment-files/nvim/0.11.3 ~/.config/nvim
+mkdir -p ~/.config
+rm -rf ~/.config/nvim && cp -R /Users/heeyong/Workspaces/dev-environment-files/nvim/0.11.3 ~/.config/nvim
 ```

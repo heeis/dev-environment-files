@@ -37,10 +37,11 @@ brew install zsh-syntax-highlighting zsh-autosuggestions
 
 ---
 
-## 심볼릭 링크 설정
+## 설정 파일 복사
 
 ```bash
-ln -sfn /Users/heeyong/Workspaces/dev-environment-files/zsh/.zshrc ~/.zshrc
+# .zshrc 파일 홈 디렉토리로 복사
+cp /Users/heeyong/Workspaces/dev-environment-files/zsh/.zshrc ~/.zshrc
 
 # 설정 즉시 반영
 source ~/.zshrc

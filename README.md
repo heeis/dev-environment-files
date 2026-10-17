@@ -56,37 +56,40 @@ brew install font-d2coding
 
 ---
 
-### 2. 심볼릭 링크 연결
+### 2. 설정 파일 복사 (Copy)
 
-저장소를 클론한 후, 각 도구의 설정 위치로 심볼릭 링크를 연결합니다:
+저장소를 클론한 후, 각 도구의 설정 경로로 파일을 복사합니다:
 
 ```bash
 # 환경 설정 경로 변수 (본인 저장소 경로에 맞게 지정)
 DOTFILES_DIR="$HOME/Workspaces/dev-environment-files"
 
-# 1. Zsh
-ln -sfn "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
+# 1. Zsh (.zshrc 복사)
+cp "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
 
-# 2. Starship
-ln -sfn "$DOTFILES_DIR/starship/starship.toml" ~/.config/starship.toml
+# 2. Starship (starship.toml 복사)
+mkdir -p ~/.config
+cp "$DOTFILES_DIR/starship/starship.toml" ~/.config/starship.toml
 
-# 3. WezTerm
-ln -sfn "$DOTFILES_DIR/wezterm" ~/.config/wezterm
+# 3. WezTerm (wezterm 디렉토리 복사)
+mkdir -p ~/.config
+rm -rf ~/.config/wezterm && cp -R "$DOTFILES_DIR/wezterm" ~/.config/wezterm
 
-# 4. Eza
+# 4. Eza (테마 파일 복사)
 mkdir -p ~/.config/eza
-ln -sfn "$DOTFILES_DIR/eza/theme.yml" ~/.config/eza/theme.yml
+cp "$DOTFILES_DIR/eza/theme.yml" ~/.config/eza/theme.yml
 
-# 5. Neovim (0.12.3 최신 버전 권장)
-ln -sfn "$DOTFILES_DIR/nvim/0.12.3" ~/.config/nvim
-# (0.11.3 버전이 필요한 경우: ln -sfn "$DOTFILES_DIR/nvim/0.11.3" ~/.config/nvim)
+# 5. Neovim (0.12.3 최신 최적화 버전 권장)
+mkdir -p ~/.config
+rm -rf ~/.config/nvim && cp -R "$DOTFILES_DIR/nvim/0.12.3" ~/.config/nvim
+# (0.11.3 버전이 필요한 경우: rm -rf ~/.config/nvim && cp -R "$DOTFILES_DIR/nvim/0.11.3" ~/.config/nvim)
 ```
 
 ---
 
 ### 3. Neovim 첫 실행 및 플러그인 세팅
 
-심볼릭 링크 연결 후 `nvim`을 실행하면 `lazy.nvim`이 필요한 플러그인들을 자동으로 설치합니다:
+설정 복사 완료 후 `nvim`을 실행하면 `lazy.nvim`이 필요한 플러그인들을 자동으로 설치합니다:
 
 ```bash
 # 1. Neovim 실행
