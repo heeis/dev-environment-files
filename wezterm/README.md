@@ -45,6 +45,6 @@ brew install font-d2coding
 
 ```bash
 # WezTerm 설정 디렉토리 복사
-mkdir -p ~/.config
-rm -rf ~/.config/wezterm && cp -R /Users/heeyong/Workspaces/dev-environment-files/wezterm ~/.config/wezterm
+mkdir -p ~/.config/wezterm
+cp -R /Users/heeyong/Workspaces/dev-environment-files/wezterm/. ~/.config/wezterm/
 ```

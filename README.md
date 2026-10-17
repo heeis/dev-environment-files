@@ -71,18 +71,18 @@ cp "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
 mkdir -p ~/.config
 cp "$DOTFILES_DIR/starship/starship.toml" ~/.config/starship.toml
 
-# 3. WezTerm (wezterm 디렉토리 복사)
-mkdir -p ~/.config
-rm -rf ~/.config/wezterm && cp -R "$DOTFILES_DIR/wezterm" ~/.config/wezterm
+# 3. WezTerm (wezterm 디렉토리 내용 복사)
+mkdir -p ~/.config/wezterm
+cp -R "$DOTFILES_DIR/wezterm/." ~/.config/wezterm/
 
 # 4. Eza (테마 파일 복사)
 mkdir -p ~/.config/eza
 cp "$DOTFILES_DIR/eza/theme.yml" ~/.config/eza/theme.yml
 
 # 5. Neovim (0.12.3 최신 최적화 버전 권장)
-mkdir -p ~/.config
-rm -rf ~/.config/nvim && cp -R "$DOTFILES_DIR/nvim/0.12.3" ~/.config/nvim
-# (0.11.3 버전이 필요한 경우: rm -rf ~/.config/nvim && cp -R "$DOTFILES_DIR/nvim/0.11.3" ~/.config/nvim)
+mkdir -p ~/.config/nvim
+cp -R "$DOTFILES_DIR/nvim/0.12.3/." ~/.config/nvim/
+# (0.11.3 버전이 필요한 경우: cp -R "$DOTFILES_DIR/nvim/0.11.3/." ~/.config/nvim/)
 ```
 
 ---

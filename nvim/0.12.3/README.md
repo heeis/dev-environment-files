@@ -29,6 +29,6 @@ Neovim 0.12.x 버전에 최적화된 모던 설정입니다.
 ## 설정 파일 복사 방법
 
 ```bash
-mkdir -p ~/.config
-rm -rf ~/.config/nvim && cp -R /Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3 ~/.config/nvim
+mkdir -p ~/.config/nvim
+cp -R /Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3/. ~/.config/nvim/
 ```

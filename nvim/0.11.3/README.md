@@ -31,6 +31,6 @@ Neovim 0.11.x 버전을 기준으로 작성된 설정 파일입니다.
 0.11.3 설정을 활성화하려면 아래 명령어로 `~/.config/nvim`에 설정을 복사합니다:
 
 ```bash
-mkdir -p ~/.config
-rm -rf ~/.config/nvim && cp -R /Users/heeyong/Workspaces/dev-environment-files/nvim/0.11.3 ~/.config/nvim
+mkdir -p ~/.config/nvim
+cp -R /Users/heeyong/Workspaces/dev-environment-files/nvim/0.11.3/. ~/.config/nvim/
 ```
