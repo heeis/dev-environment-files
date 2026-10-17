@@ -6,6 +6,7 @@ Neovim 0.12.x 버전에 최적화된 모던 설정입니다.
 
 ## 디렉토리 구성
 
+- [USAGE.md](file:///Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3/USAGE.md): **IntelliJ 사용자를 위한 Neovim 사용법 및 단축키 1:1 대조 가이드** 📖
 - [init.lua](file:///Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3/init.lua): Neovim 진입점
 - [.stylua.toml](file:///Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3/.stylua.toml): StyLua 코드 포맷터 설정
 - [lua/hy0007/](file:///Users/heeyong/Workspaces/dev-environment-files/nvim/0.12.3/lua/hy0007/)
