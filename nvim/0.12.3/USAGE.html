@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntelliJ 사용자를 위한 Neovim 0.12.3 완벽 가이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b22;
+      --bg-card-hover: #1c2128;
+      --bg-alt: #0a0d12;
+      --border: #30363d;
+      --border-accent: #388bfd33;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      
+      --accent-blue: #58a6ff;
+      --accent-purple: #bc8cff;
+      --accent-green: #3fb950;
+      --accent-yellow: #d29922;
+      --accent-red: #f85149;
+      --accent-cyan: #39c5cf;
+      --accent-orange: #f0883e;
+
+      --kbd-bg: #21262d;
+      --kbd-border: #363b42;
+      --kbd-shadow: #111418;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 80px;
+    }
+
+    code, kbd, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Container & Layout */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 60px 0 36px;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(circle at 50% 0%, rgba(56, 139, 253, 0.12) 0%, transparent 70%);
+      margin-bottom: 40px;
+    }
+
+    .badge-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      border: 1px solid transparent;
+    }
+
+    .badge-blue {
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent-blue);
+      border-color: rgba(88, 166, 255, 0.3);
+    }
+
+    .badge-purple {
+      background: rgba(188, 140, 255, 0.15);
+      color: var(--accent-purple);
+      border-color: rgba(188, 140, 255, 0.3);
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--accent-green);
+      border-color: rgba(63, 185, 80, 0.3);
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #ffffff 30%, #a5d6ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-desc {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 800px;
+    }
+
+    /* Core Concept Hero Card */
+    .hero-card {
+      background: linear-gradient(145deg, #161b22, #0d1117);
+      border: 1px solid var(--border-accent);
+      border-radius: 16px;
+      padding: 28px 32px;
+      margin-bottom: 40px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-cyan));
+    }
+
+    .hero-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    .hero-text {
+      color: #c9d1d9;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .hero-tip {
+      background: rgba(56, 139, 253, 0.08);
+      border-left: 4px solid var(--accent-blue);
+      padding: 12px 18px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.95rem;
+      color: #a5d6ff;
+    }
+
+    /* Search & Filter Toolbar */
+    .table-toolbar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .table-toolbar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 480px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 12px 16px 12px 42px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+      background: var(--bg-card-hover);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .chip:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--text-dim);
+    }
+
+    .chip.active {
+      background: var(--accent-blue);
+      color: #0d1117;
+      font-weight: 600;
+      border-color: var(--accent-blue);
+    }
+
+    /* Comparison Table */
+    .table-wrapper {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      margin-bottom: 50px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background: #1c2128;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(56, 139, 253, 0.04);
+    }
+
+    .work-col {
+      font-weight: 600;
+      color: #ffffff;
+      white-space: nowrap;
+    }
+
+    /* Key Badges */
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--kbd-bg);
+      border: 1px solid var(--kbd-border);
+      border-bottom: 2px solid var(--kbd-border);
+      box-shadow: 0 2px 0 var(--kbd-shadow);
+      color: #c9d1d9;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      margin: 1px 2px;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+    }
+
+    kbd:hover {
+      background: #2b323c;
+      transform: translateY(-1px);
+    }
+
+    .nvim-key {
+      color: #79c0ff;
+      border-color: #388bfd66;
+      background: #111a28;
+    }
+
+    .nvim-key:hover {
+      background: #1b273b;
+    }
+
+    .space-key {
+      color: #d2a8ff;
+      border-color: #bc8cff66;
+      background: #1e152d;
+    }
+
+    /* Section Cards Grid */
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 50px 0 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    @media (min-width: 768px) {
+      .grid-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--text-dim);
+    }
+
+    .card-header {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-list li {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .card-list li span.desc {
+      color: #c9d1d9;
+    }
+
+    /* Language Support Banner */
+    .lang-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .lang-card {
+      background: #11161d;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+
+    .lang-card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-tools {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .lang-tools code {
+      color: var(--accent-cyan);
+      background: rgba(57, 197, 207, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #238636;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .table-toolbar, .badge-wrapper, .hero-tip {
+        display: none !important;
+      }
+      .table-wrapper, .hero-card, .card {
+        border: 1px solid #ccc;
+        box-shadow: none;
+        background: none;
+      }
+      th {
+        background: #f0f0f0;
+        color: #333;
+      }
+      h1, h2, h3, .work-col, .card-header {
+        color: #000000 !important;
+        -webkit-text-fill-color: initial;
+      }
+      kbd {
+        border: 1px solid #999;
+        background: #eee;
+        color: #000;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast for copying -->
+  <div id="toast" class="toast">단축키가 클립보드에 복사되었습니다!</div>
+
+  <header>
+    <div class="container">
+      <div class="badge-wrapper">
+        <span class="badge badge-blue">Neovim 0.12.3 Optimized</span>
+        <span class="badge badge-purple">IntelliJ Transition Guide</span>
+        <span class="badge badge-green">Java & Kotlin Ready</span>
+      </div>
+      <h1>IntelliJ 사용자를 위한 Neovim 0.12.3 완벽 가이드</h1>
+      <p class="header-desc">
+        JetBrains IntelliJ IDEA에서 Neovim으로 성공적으로 안착하기 위한 1:1 단축키 치트시트 및 실전 개발 가이드입니다.
+      </p>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Hero Card: Leader Key -->
+    <section class="hero-card">
+      <div class="hero-title">
+        <span>📌 핵심 개념: 리더 키 (&lt;leader&gt;)</span>
+      </div>
+      <p class="hero-text">
+        이 설정에서 <strong>&lt;leader&gt;</strong> 키는 <strong>스페이스바 (<kbd class="space-key">Space</kbd>)</strong>로 설정되어 있습니다.<br>
+        예를 들어 <kbd class="space-key">Space</kbd>를 누른 뒤 <kbd class="nvim-key">f</kbd>, <kbd class="nvim-key">f</kbd>를 순서대로 누르면 전체 파일 검색 창이 열립니다.
+      </p>
+      <div class="hero-tip">
+        💡 <strong>Tip (which-key 단축키 힌트)</strong>: <kbd class="space-key">Space</kbd>를 누르고 약 0.3초간 기다리면, 화면 하단에 현재 누를 수 있는 모든 단축키 목록이 팝업으로 자동 표시됩니다. 굳이 모든 키를 외우지 않아도 손쉽게 탐색할 수 있습니다!
+      </div>
+    </section>
+
+    <!-- Interactive Comparison Section -->
+    <section id="cheatsheet">
+      <div class="table-toolbar">
+        <div class="search-box">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="searchInput" placeholder="단축키 또는 기능 검색... (예: Cmd+B, 검색, git, rename, 에러)" autocomplete="off">
+        </div>
+        <div class="filter-chips">
+          <button class="chip active" data-filter="all">전체</button>
+          <button class="chip" data-filter="search">탐색/검색</button>
+          <button class="chip" data-filter="lsp">LSP/리팩토링</button>
+          <button class="chip" data-filter="git">Git</button>
+          <button class="chip" data-filter="format">포맷/린트</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="shortcutTable">
+          <thead>
+            <tr>
+              <th style="width: 22%;">작업 내용</th>
+              <th style="width: 28%;">IntelliJ 단축키 (macOS)</th>
+              <th style="width: 25%;">Neovim 0.12.3 단축키</th>
+              <th style="width: 25%;">설명 & 도구</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Search & Navigation -->
+            <tr data-cat="search">
+              <td class="work-col">전체 파일 검색</td>
+              <td><kbd>Shift</kbd> <kbd>Shift</kbd> 또는 <kbd>⌘</kbd> <kbd>O</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">f</kbd> <kbd class="nvim-key">f</kbd></td>
+              <td>프로젝트 전체 파일명 퍼지 검색 (Telescope)</td>
+            </tr>
+            <tr data-cat="search">
+              <td class="work-col">최근 파일 열기</td>
+              <td><kbd>⌘</kbd> <kbd>E</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">f</kbd> <kbd class="nvim-key">r</kbd></td>
+              <td>최근 열었던 파일 히스토리 목록 (Recent Files)</td>
+            </tr>
+            <tr data-cat="search">
+              <td class="work-col">전체 문자열 검색</td>
+              <td><kbd>⌘</kbd> <kbd>⇧</kbd> <kbd>F</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">f</kbd> <kbd class="nvim-key">s</kbd></td>
+              <td>프로젝트 전체 텍스트 실시간 검색 (Live Grep)</td>
+            </tr>
+            <tr data-cat="search">
+              <td class="work-col">현재 단어 검색</td>
+              <td><kbd>⌘</kbd> <kbd>F3</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">f</kbd> <kbd class="nvim-key">c</kbd></td>
+              <td>커서 위치 단어를 전체 프로젝트에서 검색</td>
+            </tr>
+            <tr data-cat="search">
+              <td class="work-col">프로젝트 창 열기/닫기</td>
+              <td><kbd>⌘</kbd> <kbd>1</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">e</kbd> <kbd class="nvim-key">e</kbd></td>
+              <td>사이드바 파일 탐색기 토글 (NvimTree)</td>
+            </tr>
+            <tr data-cat="search">
+              <td class="work-col">현재 파일 위치 강조</td>
+              <td><kbd>⌥</kbd> <kbd>F1</kbd> → <kbd>1</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">e</kbd> <kbd class="nvim-key">f</kbd></td>
+              <td>편집 중인 파일의 탐색기 내 위치 자동 포커스</td>
+            </tr>
+
+            <!-- LSP & Refactoring -->
+            <tr data-cat="lsp">
+              <td class="work-col">정의/선언 이동</td>
+              <td><kbd>⌘</kbd> <kbd>B</kbd> 또는 <kbd>F12</kbd></td>
+              <td><kbd class="nvim-key">g</kbd> <kbd class="nvim-key">d</kbd></td>
+              <td>함수, 클래스, 변수 선언/정의 위치로 점프</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">구현체 찾기</td>
+              <td><kbd>⌘</kbd> <kbd>⌥</kbd> <kbd>B</kbd></td>
+              <td><kbd class="nvim-key">g</kbd> <kbd class="nvim-key">i</kbd></td>
+              <td>인터페이스나 추상 클래스의 실제 구현체 목록</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">사용처 찾기 (Usages)</td>
+              <td><kbd>⌥</kbd> <kbd>F7</kbd> 또는 <kbd>⇧</kbd> <kbd>F12</kbd></td>
+              <td><kbd class="nvim-key">g</kbd> <kbd class="nvim-key">R</kbd></td>
+              <td>현재 심볼이 사용된 모든 참조 위치 목록 (References)</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">퀵 픽스 / 코드 액션</td>
+              <td><kbd>⌥</kbd> <kbd>Enter</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">c</kbd> <kbd class="nvim-key">a</kbd></td>
+              <td>자동 Import, 빠른 코드 수정 등 Code Action</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">이름 변경 (Rename)</td>
+              <td><kbd>⇧</kbd> <kbd>F6</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">r</kbd> <kbd class="nvim-key">n</kbd></td>
+              <td>프로젝트 전체 변수/함수 스마트 일괄 리네임</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">문서 / 타입 호버</td>
+              <td><kbd>F1</kbd> 또는 <kbd>⌘</kbd> <kbd>J</kbd></td>
+              <td><kbd class="nvim-key">K</kbd></td>
+              <td>커서 위치 타입 시그니처 및 docstring 팝업</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">다음 / 이전 에러 이동</td>
+              <td><kbd>F2</kbd> / <kbd>⇧</kbd> <kbd>F2</kbd></td>
+              <td><kbd class="nvim-key">]</kbd> <kbd class="nvim-key">d</kbd> / <kbd class="nvim-key">[</kbd> <kbd class="nvim-key">d</kbd></td>
+              <td>다음/이전 문법 에러 및 경고 위치로 즉시 점프</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">에러 상세 메시지 확인</td>
+              <td><kbd>⌘</kbd> <kbd>F1</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">d</kbd></td>
+              <td>현재 줄의 에러 메시지를 작은 창으로 표시</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">프로젝트 에러 창 (Problems)</td>
+              <td><kbd>⌘</kbd> <kbd>6</kbd> (Problems)</td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">x</kbd> <kbd class="nvim-key">w</kbd></td>
+              <td>프로젝트 전체 에러/경고 목록 하단 고정 (Trouble)</td>
+            </tr>
+            <tr data-cat="lsp">
+              <td class="work-col">자동 완성 제안 팝업</td>
+              <td><kbd>⌃</kbd> <kbd>Space</kbd></td>
+              <td><kbd>Ctrl</kbd> <kbd>Space</kbd></td>
+              <td>코드 자동 완성 및 스니펫 추천 창 열기</td>
+            </tr>
+
+            <!-- Formatting & Linting -->
+            <tr data-cat="format">
+              <td class="work-col">코드 포맷팅</td>
+              <td><kbd>⌥</kbd> <kbd>⌘</kbd> <kbd>L</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">m</kbd> <kbd class="nvim-key">p</kbd></td>
+              <td>ktlint, google-java-format, prettier 자동 정렬</td>
+            </tr>
+            <tr data-cat="format">
+              <td class="work-col">수동 린터 검사</td>
+              <td>Code &gt; Inspect Code</td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">l</kbd></td>
+              <td>현재 파일에 대해 린터(ktlint, eslint_d 등) 실행</td>
+            </tr>
+
+            <!-- Git -->
+            <tr data-cat="git">
+              <td class="work-col">Git 관리 창 열기</td>
+              <td><kbd>⌘</kbd> <kbd>9</kbd> 또는 <kbd>⌘</kbd> <kbd>K</kbd></td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">l</kbd> <kbd class="nvim-key">g</kbd></td>
+              <td>터미널 UI 기반 초고속 LazyGit 실행 (<kbd>q</kbd>로 종료)</td>
+            </tr>
+            <tr data-cat="git">
+              <td class="work-col">다음 / 이전 Git 변경 블록</td>
+              <td><kbd>⌃</kbd> <kbd>⌥</kbd> <kbd>⇧</kbd> <kbd>↓</kbd> / <kbd>↑</kbd></td>
+              <td><kbd class="nvim-key">]</kbd> <kbd class="nvim-key">h</kbd> / <kbd class="nvim-key">[</kbd> <kbd class="nvim-key">h</kbd></td>
+              <td>변경된 코드 블록(Hunk) 사이를 즉시 이동</td>
+            </tr>
+            <tr data-cat="git">
+              <td class="work-col">변경 블록 diff 미리보기</td>
+              <td>Rollback / Diff 팝업</td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">h</kbd> <kbd class="nvim-key">p</kbd></td>
+              <td>해당 변경 블록의 이전 코드 diff 미리보기</td>
+            </tr>
+            <tr data-cat="git">
+              <td class="work-col">현재 줄 Git Blame 확인</td>
+              <td>Annotate with Git Blame</td>
+              <td><kbd class="space-key">Space</kbd> <kbd class="nvim-key">h</kbd> <kbd class="nvim-key">b</kbd></td>
+              <td>커밋 작성자, 시간, 커밋 메시지 상세 팝업</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Deep-dive Grid Cards -->
+    <h2 class="section-title">📂 영역별 핵심 조작 가이드</h2>
+
+    <div class="grid-cards">
+      <!-- Card 1: NvimTree -->
+      <div class="card">
+        <div class="card-header">
+          <span>📁 1. 파일 탐색기 내부 조작 (NvimTree)</span>
+        </div>
+        <ul class="card-list">
+          <li><kbd class="nvim-key">a</kbd> <span class="desc">: 새 파일 생성 (이름 끝에 <code>/</code>를 붙이면 폴더)</span></li>
+          <li><kbd class="nvim-key">d</kbd> <span class="desc">: 파일 또는 폴더 삭제</span></li>
+          <li><kbd class="nvim-key">r</kbd> <span class="desc">: 이름 변경 (Rename)</span></li>
+          <li><kbd class="nvim-key">x</kbd> / <kbd class="nvim-key">c</kbd> / <kbd class="nvim-key">p</kbd> <span class="desc">: 잘라내기 / 복사 / 붙여넣기</span></li>
+          <li><kbd class="nvim-key">o</kbd> 또는 <kbd class="nvim-key">Enter</kbd> <span class="desc">: 파일 열기</span></li>
+          <li><kbd class="nvim-key">q</kbd> <span class="desc">: 탐색기 닫기</span></li>
+        </ul>
+      </div>
+
+      <!-- Card 2: Splits & Windows -->
+      <div class="card">
+        <div class="card-header">
+          <span>🪟 2. 창 분할 및 탭 관리 (Splits)</span>
+        </div>
+        <ul class="card-list">
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">s</kbd> <kbd class="nvim-key">v</kbd> <span class="desc">: 세로 창 분할 (Vertical Split)</span></li>
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">s</kbd> <kbd class="nvim-key">h</kbd> <span class="desc">: 가로 창 분할 (Horizontal Split)</span></li>
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">s</kbd> <kbd class="nvim-key">m</kbd> <span class="desc">: 현재 창 최대화 / 이전 크기 복원 토글</span></li>
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">s</kbd> <kbd class="nvim-key">x</kbd> <span class="desc">: 현재 창 닫기</span></li>
+          <li><kbd>Ctrl</kbd> + <kbd class="nvim-key">h / j / k / l</kbd> <span class="desc">: 방향키처럼 분할 창 사이 이동</span></li>
+        </ul>
+      </div>
+
+      <!-- Card 3: Surround -->
+      <div class="card">
+        <div class="card-header">
+          <span>✂️ 3. 텍스트 감싸기 &amp; 빠른 조작 (Surround)</span>
+        </div>
+        <ul class="card-list">
+          <li><kbd class="nvim-key">y</kbd><kbd class="nvim-key">s</kbd><kbd class="nvim-key">i</kbd><kbd class="nvim-key">w</kbd><kbd>"</kbd> <span class="desc">: 현재 단어를 큰따옴표로 감싸기</span></li>
+          <li><kbd class="nvim-key">c</kbd><kbd class="nvim-key">s</kbd><kbd>"</kbd><kbd>'</kbd> <span class="desc">: 큰따옴표를 작은따옴표로 변경</span></li>
+          <li><kbd class="nvim-key">d</kbd><kbd class="nvim-key">s</kbd><kbd>"</kbd> <span class="desc">: 감싸고 있는 따옴표 제거</span></li>
+          <li><kbd class="nvim-key">s</kbd><kbd class="nvim-key">i</kbd><kbd class="nvim-key">w</kbd> <span class="desc">: 클립보드에 복사된 내용으로 단어 대체</span></li>
+          <li><kbd class="nvim-key">j</kbd><kbd class="nvim-key">k</kbd> <span class="desc">: Insert 모드에서 빠른 <kbd>Esc</kbd> 탈출</span></li>
+        </ul>
+      </div>
+
+      <!-- Card 4: Session -->
+      <div class="card">
+        <div class="card-header">
+          <span>💾 4. 세션 관리 &amp; 작업 저장</span>
+        </div>
+        <ul class="card-list">
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">w</kbd> <kbd class="nvim-key">s</kbd> <span class="desc">: 현재 열린 창/버퍼 세션 저장 (Save Session)</span></li>
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">w</kbd> <kbd class="nvim-key">r</kbd> <span class="desc">: 이전 작업 공간 세션 복원 (Restore Session)</span></li>
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">n</kbd> <kbd class="nvim-key">h</kbd> <span class="desc">: 검색 후 남아있는 하이라이트 지우기</span></li>
+          <li><kbd class="space-key">Space</kbd> <kbd class="nvim-key">f</kbd> <kbd class="nvim-key">t</kbd> <span class="desc">: 프로젝트 내 모든 TODO 주석 조회</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Supported Languages -->
+    <h2 class="section-title">☕ 기본 구성 언어 환경 (LSP &amp; Formatter)</h2>
+    <p style="color: var(--text-muted); margin-bottom: 20px;">
+      Neovim을 처음 실행하면 Mason이 백그라운드에서 아래 언어 도구들을 자동으로 설치합니다.
+    </p>
+
+    <div class="lang-grid">
+      <div class="lang-card">
+        <div class="lang-card-title" style="color: var(--accent-orange);">☕ Java</div>
+        <div class="lang-tools">
+          LSP: <code>jdtls</code><br>
+          Formatter: <code>google-java-format</code><br>
+          Treesitter: <code>java</code>
+        </div>
+      </div>
+
+      <div class="lang-card">
+        <div class="lang-card-title" style="color: var(--accent-purple);">🟣 Kotlin</div>
+        <div class="lang-tools">
+          LSP: <code>kotlin_language_server</code><br>
+          Formatter/Linter: <code>ktlint</code><br>
+          Treesitter: <code>kotlin</code>
+        </div>
+      </div>
+
+      <div class="lang-card">
+        <div class="lang-card-title" style="color: var(--accent-blue);">📘 TypeScript / JS</div>
+        <div class="lang-tools">
+          LSP: <code>ts_ls</code><br>
+          Formatter: <code>prettier</code><br>
+          Linter: <code>eslint_d</code>
+        </div>
+      </div>
+
+      <div class="lang-card">
+        <div class="lang-card-title" style="color: var(--accent-yellow);">🐍 Python</div>
+        <div class="lang-tools">
+          LSP: <code>pyright</code><br>
+          Formatter: <code>black</code>, <code>isort</code><br>
+          Linter: <code>pylint</code>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Search Filtering
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('shortcutTable');
+    const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    const chips = document.querySelectorAll('.chip');
+    const toast = document.getElementById('toast');
+
+    let currentFilter = 'all';
+
+    function filterTable() {
+      const query = searchInput.value.toLowerCase().trim();
+
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const rowCategory = row.getAttribute('data-cat');
+        const rowText = row.innerText.toLowerCase();
+
+        const matchesQuery = query === '' || rowText.includes(query);
+        const matchesCategory = currentFilter === 'all' || rowCategory === currentFilter;
+
+        if (matchesQuery && matchesCategory) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      }
+    }
+
+    searchInput.addEventListener('input', filterTable);
+
+    // Category Chips
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.getAttribute('data-filter');
+        filterTable();
+      });
+    });
+
+    // Copy to clipboard on kbd click
+    let toastTimeout;
+    document.querySelectorAll('kbd').forEach(kbd => {
+      kbd.addEventListener('click', () => {
+        const text = kbd.innerText.trim();
+        navigator.clipboard.writeText(text).then(() => {
+          toast.textContent = `단축키 "${text}" 복사 완료!`;
+          toast.classList.add('show');
+          clearTimeout(toastTimeout);
+          toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+          }, 2000);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
